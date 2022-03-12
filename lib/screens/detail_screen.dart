@@ -16,7 +16,7 @@ class DetailScreen extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            Image(image: post['imageURL']),
+            Image.network(post['imageURL']),
             Text('Quantity: ${post['quantity'].toString()}'),
             Text(
               'Location: {${post['latitude'].toString()}, ${post['longitude']}}'

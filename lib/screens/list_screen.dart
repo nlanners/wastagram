@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 import 'detail_screen.dart';
 import 'new_post.dart';
@@ -23,6 +25,7 @@ class _ListScreenState extends State<ListScreen> {
 
   final picker = ImagePicker();
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +37,8 @@ class _ListScreenState extends State<ListScreen> {
       floatingActionButton: createFAB(context)
     );
   }
-
+  
+  
 
   Widget createFAB(BuildContext context) {
     return FloatingActionButton(
@@ -44,18 +48,14 @@ class _ListScreenState extends State<ListScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: ((context) => NewPost(image: image,))
+              builder: ((context) => NewPost(image: image, ))
             )
           );
         },
       );
   }
 
-  Future<File> getImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    return File(pickedFile!.path);
-    
-  }
+  
 
   Widget listBody(BuildContext context) {
     return StreamBuilder(
@@ -73,6 +73,7 @@ class _ListScreenState extends State<ListScreen> {
 
   Widget createListView(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
     return ListView.builder(
+      
       itemCount: snapshot.data!.docs.length,
       itemBuilder: (context, index) {
         var post = snapshot.data!.docs[index];
@@ -82,8 +83,11 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   Widget createListTile(BuildContext context, post) {
+    var dateTime = DateTime.parse(post['date']);
+    String dateTitle = DateFormat('EEEE, MMM. d').format(dateTime);
+    
     return ListTile(
-      title: Text(post['date']),
+      title: Text(dateTitle),
       subtitle: Text(post['quantity'].toString()),
       onTap: () {
         Navigator.push(
@@ -94,6 +98,11 @@ class _ListScreenState extends State<ListScreen> {
         );
       }
     );
+  }
+
+  Future<File> getImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+    return File(pickedFile!.path);
   }
 
 }
