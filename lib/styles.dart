@@ -60,6 +60,7 @@ class Styles {
   static ThemeData lightTheme = ThemeData(
     colorScheme: const ColorScheme.light(
       primary: Colors.blue,
+      background: Colors.green
     ),
   );
 
@@ -73,5 +74,6 @@ class Styles {
     fontSize: _textSizeDefault,
     color: _textColorFaint
   );
+
 
 }

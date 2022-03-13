@@ -9,8 +9,6 @@ import '../styles.dart';
 import 'detail_screen.dart';
 import 'new_post.dart';
 
-
-
 class ListScreen extends StatefulWidget {
   const ListScreen({ Key? key }) : super(key: key);
 
@@ -22,25 +20,29 @@ class _ListScreenState extends State<ListScreen> {
 
   final picker = ImagePicker();
   String appTitle = 'Wasteagram';
-  late num total;
+  num total = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text(appTitle))
+        title: Text(appTitle),
+        centerTitle: true,
       ),
       body: listBody(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: createFAB(context)
+      floatingActionButton: Semantics(
+        child: createFAB(context),
+        button: true,
+        enabled: true,
+        onTapHint: 'Select an image',
+      )
     );
   }
   
-  
-
   Widget createFAB(BuildContext context) {
     return FloatingActionButton(
-        child: const Icon(Icons.post_add),
+        child: const Icon(Icons.add_a_photo),
         onPressed: () async {
           File image = await getImage();
           Navigator.push(
@@ -52,8 +54,6 @@ class _ListScreenState extends State<ListScreen> {
         },
       );
   }
-
-  
 
   Widget listBody(BuildContext context) {
     return StreamBuilder(
@@ -79,7 +79,12 @@ class _ListScreenState extends State<ListScreen> {
         itemBuilder: (context, index) {
           var post = snapshot.data!.docs[index];
           total += post['quantity'];
-          return createListTile(context, post);
+          return Semantics(
+            child: createListTile(context, post),
+            enabled: true,
+            link: true,
+            onTapHint: 'Opens post details',
+            );
         },
       );
     }
@@ -92,9 +97,6 @@ class _ListScreenState extends State<ListScreen> {
       title: Text(dateTitle, style: Styles.normalText),
       trailing: Text(post['quantity'].toString(), style: Styles.trailingText),
       onTap: () {
-        setState(() {
-          appTitle = 'Wasteagram - $total';
-        });
         Navigator.push(
           context, 
           MaterialPageRoute(
