@@ -86,29 +86,37 @@ class _NewPostState extends State<NewPost> {
   }
 
   Widget submitButton() {
-    return ElevatedButton(onPressed: () async {
-      if (_formKey.currentState!.validate()){
+    return ElevatedButton(
+      onPressed: () async {
+        if (_formKey.currentState!.validate()){
 
-        setState(() { _isLoading = true; });
+          setState(() { _isLoading = true; });
 
-        _formKey.currentState!.save();
+          _formKey.currentState!.save();
 
-        var location = await currentLocation;
-        formValues.imageURL = await uploadImage(widget.image);
-        formValues.dateTime = DateTime.now();
-        formValues.latitude = location.latitude!;
-        formValues.longitude = location.longitude!;
+          var location = await currentLocation;
+          formValues.imageURL = await uploadImage(widget.image);
+          formValues.dateTime = DateTime.now();
+          formValues.latitude = location.latitude!;
+          formValues.longitude = location.longitude!;
 
-        FirebaseFirestore.instance.collection('posts').add(
-          formValues.sendValues());
+          FirebaseFirestore.instance.collection('posts')
+            .add(formValues.sendValues());
 
-        Navigator.pop(context);
-      }
-    },
-    child: 
-      _isLoading ? const CircularProgressIndicator() : 
-        const Icon(Icons.cloud_upload)
+          Navigator.pop(context);
+        }
+      },
+      child: 
+        _isLoading ? const CircularProgressIndicator(color: Colors.white,) : 
+          const Icon(Icons.cloud_upload, size: 100, ),
+      style: ElevatedButton.styleFrom(
+        alignment: Alignment.center,
+        fixedSize: Size(
+          MediaQuery.of(context).size.width, 
+          MediaQuery.of(context).size.height/6)
+      )
     );
+    
   }
 
   Widget enterWastedItems() {

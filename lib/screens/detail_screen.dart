@@ -11,7 +11,7 @@ class DetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(post['date'])
+        title: const Text('Wasteagram')
       ),
       body: Center(
         child: Column(

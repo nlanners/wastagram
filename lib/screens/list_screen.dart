@@ -1,16 +1,13 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
+import '../styles.dart';
 import 'detail_screen.dart';
 import 'new_post.dart';
-
-
-
 
 
 
@@ -24,13 +21,14 @@ class ListScreen extends StatefulWidget {
 class _ListScreenState extends State<ListScreen> {
 
   final picker = ImagePicker();
-
+  String appTitle = 'Wasteagram';
+  late num total;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(child: Text('Wastagram'))
+        title: Center(child: Text(appTitle))
       ),
       body: listBody(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -59,7 +57,8 @@ class _ListScreenState extends State<ListScreen> {
 
   Widget listBody(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('posts').snapshots(),
+      stream: FirebaseFirestore.instance.collection('posts')
+        .orderBy('date', descending: true).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData &&
             snapshot.data!.docs.isNotEmpty) {
@@ -71,25 +70,31 @@ class _ListScreenState extends State<ListScreen> {
     );
   }
 
-  Widget createListView(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-    return ListView.builder(
-      
-      itemCount: snapshot.data!.docs.length,
-      itemBuilder: (context, index) {
-        var post = snapshot.data!.docs[index];
-        return createListTile(context, post);
-      },
-    );
-  }
+  Widget createListView(
+    BuildContext context, 
+    AsyncSnapshot<QuerySnapshot> snapshot) {
+      return ListView.builder(
+        
+        itemCount: snapshot.data!.docs.length,
+        itemBuilder: (context, index) {
+          var post = snapshot.data!.docs[index];
+          total += post['quantity'];
+          return createListTile(context, post);
+        },
+      );
+    }
 
   Widget createListTile(BuildContext context, post) {
     var dateTime = DateTime.parse(post['date']);
     String dateTitle = DateFormat('EEEE, MMM. d').format(dateTime);
     
     return ListTile(
-      title: Text(dateTitle),
-      subtitle: Text(post['quantity'].toString()),
+      title: Text(dateTitle, style: Styles.normalText),
+      trailing: Text(post['quantity'].toString(), style: Styles.trailingText),
       onTap: () {
+        setState(() {
+          appTitle = 'Wasteagram - $total';
+        });
         Navigator.push(
           context, 
           MaterialPageRoute(
